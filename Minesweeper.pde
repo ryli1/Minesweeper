@@ -1,5 +1,6 @@
 import de.bezier.guido.*;
 
+//what does public and private do for global variables
 public final static int NUM_ROWS = 20;
 public final static int NUM_COLS = 20;
 private MSButton[][] buttons = new MSButton[NUM_ROWS][NUM_COLS]; //2d array of minesweeper buttons
