@@ -2,14 +2,13 @@
 //make it so the first mine clicked is never a mine
 //choose board size and mine count
 //click all mines at end of game
-//make numbers have set colors instead of random
 
 import de.bezier.guido.*;
 
 public final static int NUM_ROWS = 20;
 public final static int NUM_COLS = 20;
 public final static int NUM_SQUARES = NUM_ROWS * NUM_COLS;
-public static int NUM_MINES = 100;
+public static int NUM_MINES = 150;
 
 //width and height
 public static int w;
@@ -26,6 +25,7 @@ void setup () {
   textAlign(CENTER, CENTER);
   // make the manager
   Interactive.make( this );
+  //your code to initialize buttons goes here
   for (int r = 0; r < NUM_ROWS; r++) {
     for (int c = 0; c < NUM_COLS; c++) {
       squares[r][c] = new MSButton(r, c);
@@ -51,17 +51,20 @@ public void draw () {
 }
 
 public boolean isWon() {
+  //your code here
   return false;
 }
 
 public void displayLosingMessage() {
+  //your code here
 }
 
 public void displayWinningMessage() {
+  //your code here
 }
 
 public boolean isValid(int r, int c) {
-  return (r >= 0 && c >= 0 && r <= NUM_ROWS && c <= NUM_COLS);
+  return (r >= 0 && c >= 0 && r < NUM_ROWS && c < NUM_COLS);
 }
 public int countMines(int row, int col) {
   int numMines = 0;
@@ -99,7 +102,7 @@ public class MSButton
   public void mousePressed () 
   {
     if (mouseX < x+width && mouseX > x && mouseY < y+height && mouseY > y) {
-      if (mouseButton == RIGHT) {
+      if (mouseButton == RIGHT && !clicked) {
         flagged = !flagged;
         if (flagged) {
           myLabel = "▀";
@@ -109,10 +112,14 @@ public class MSButton
       } else if (mouseButton == LEFT && !flagged) {
         clicked = true;
         if (mines.contains(this)) {
-          this.setLabel("●");
+          myLabel = "●";
           mined = true;
         } else {
-          this.setLabel(countMines(myRow, myCol));
+          if(countMines(myRow, myCol) != 0) {
+            myLabel = "" + countMines(myRow, myCol);
+          } else if (countMines(myRow, myCol) == 0) {
+            //recursively click nearby mines 
+          }
         }
       }
     }
@@ -152,7 +159,7 @@ public class MSButton
       textSize(20);
       fill(myRandColor);
     }
-    text(myLabel, x+width/2, y+height/2);
+    text(myLabel, x+width/2, y+height/2); //check this width and height
   }
   public void setLabel(String newLabel)
   {
