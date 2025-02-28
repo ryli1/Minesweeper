@@ -86,6 +86,7 @@ public class MSButton
   private color myRandColor;
 
   public MSButton (int row, int col) {
+    
     width = w/NUM_COLS;
     height = h/NUM_ROWS;
     myRow = row;
@@ -115,10 +116,10 @@ public class MSButton
           myLabel = "●";
           mined = true;
         } else {
-          if(countMines(myRow, myCol) != 0) {
+          if (countMines(myRow, myCol) != 0) {
             myLabel = "" + countMines(myRow, myCol);
           } else if (countMines(myRow, myCol) == 0) {
-            //recursively click nearby mines 
+            //recursively click nearby mines
           }
         }
       }
@@ -152,9 +153,12 @@ public class MSButton
     hovered = false;
 
     rect(x, y, width, height);
-    if (flagged || mined) { 
+    if (flagged) { 
       textSize(15);
       fill(255, 0, 0);
+    } else if (mined) {
+      textSize(15);
+      fill(0);
     } else {
       textSize(20);
       fill(myRandColor);
