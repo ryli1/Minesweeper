@@ -2,6 +2,7 @@
 //make it so the first mine clicked is never a mine
 //choose board size and mine count
 //click all mines at end of game
+//make numbers have set colors instead of random
 
 import de.bezier.guido.*;
 
