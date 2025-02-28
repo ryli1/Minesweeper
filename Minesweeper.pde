@@ -3,8 +3,11 @@ import de.bezier.guido.*;
 //what does public and private do for global variables
 public final static int NUM_ROWS = 20;
 public final static int NUM_COLS = 20;
-private MSButton[][] buttons = new MSButton[NUM_ROWS][NUM_COLS]; //2d array of minesweeper buttons
-private ArrayList <MSButton> mines; //ArrayList of just the minesweeper buttons that are mined
+public final static int NUM_SQUARES = NUM_ROWS * NUM_COLS;
+public static int NUM_MINES = 150;
+
+private MSButton[][] squares = new MSButton[NUM_ROWS][NUM_COLS]; //2d array of minesweeper buttons
+private ArrayList <MSButton> mines = new ArrayList <MSButton>(); //ArrayList of just the minesweeper buttons that are mined
 
 void setup () {
   size(600, 600);
@@ -15,18 +18,24 @@ void setup () {
   //your code to initialize buttons goes here
   for (int r = 0; r < NUM_ROWS; r++) {
     for (int c = 0; c < NUM_COLS; c++) {
-      buttons[r][c] = new MSButton(r, c);
+      squares[r][c] = new MSButton(r, c);
     }
   }
   setMines();
 }
 
 public void setMines() {
-  //your code
+  while (mines.size() < NUM_MINES) {
+    int r = (int)(Math.random()*NUM_ROWS);
+    int c = (int)(Math.random()*NUM_COLS);
+    if(!mines.contains(squares[r][c])) { //if this square isn't already a mine
+      mines.add(squares[r][c]);
+    }
+  }
 }
 
 public void draw () {
-  background( 0 );
+  background(255);
   if (isWon() == true)
     displayWinningMessage();
 }
@@ -39,16 +48,17 @@ public boolean isWon() {
 public void displayLosingMessage() {
   //your code here
 }
+
 public void displayWinningMessage() {
   //your code here
 }
+
 public boolean isValid(int r, int c) {
   //your code here
   return false;
 }
 public int countMines(int row, int col) {
   int numMines = 0;
-  //your code here
   return numMines;
 }
 public class MSButton {
@@ -56,17 +66,16 @@ public class MSButton {
   private float x, y, widt, heigh;
   private boolean clicked, flagged;
   private String myLabel;
-  private color myC;
 
   public MSButton (int row, int col) {
     widt = width/NUM_COLS;
     heigh = height/NUM_ROWS;
+    clicked = flagged = false;
     myRow = row;
     myCol = col; 
     x = myCol*widt;
     y = myRow*heigh;
     myLabel = "";
-    flagged = clicked = false;
     Interactive.add( this ); // register it with the manager
   }
 
@@ -77,28 +86,25 @@ public class MSButton {
   }
   public void draw () { 
     noStroke();
-    if (flagged)
+    /*if (flagged)
       fill(0);
-    else if( clicked && mines.contains(this) ) {
-        fill(255,0,0);
-    }  
-    else if (clicked) {
-      fill( 200 );
-    }
-    else if ((mouseX < x+widt && mouseX > x && mouseY < y+heigh && mouseY > y)) { 
+    else */if (clicked && mines.contains(this)) {
+      fill(255, 0, 0);
+    } else if (clicked) {
+      fill(200);
+    } else if ((mouseX < x+widt && mouseX > x && mouseY < y+heigh && mouseY > y)) { 
       fill(#b9dd77); //hovered color
-    }
-    else {
+    } else {
       if ((myRow % 2 == 0 && myCol % 2 != 0)||(myRow % 2 != 0 && myCol % 2 == 0)) {
         fill(#94bf41); //darker green
       } else {
-        fill(#aad751);
+        fill(#aad751); //lighter green
       }
-    }
+    } 
 
     rect(x, y, widt, heigh);
     fill(0);
-    text(myLabel, x+width/2, y+height/2); //check this width and height
+    text(myLabel, x+widt/2, y+heigh/2); //check this width and height
   }
   public void setLabel(String newLabel)
   {
