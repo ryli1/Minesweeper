@@ -9,7 +9,7 @@ import de.bezier.guido.*;
 public final static int NUM_ROWS = 20;
 public final static int NUM_COLS = 20;
 public final static int NUM_SQUARES = NUM_ROWS * NUM_COLS;
-public static int NUM_MINES = 150;
+public static int NUM_MINES = 100;
 
 //width and height
 public static int w;
