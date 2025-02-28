@@ -1,6 +1,5 @@
 import de.bezier.guido.*;
 
-//what does public and private do for global variables
 public final static int NUM_ROWS = 20;
 public final static int NUM_COLS = 20;
 public final static int NUM_SQUARES = NUM_ROWS * NUM_COLS;
