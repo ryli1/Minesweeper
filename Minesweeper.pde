@@ -26,7 +26,6 @@ void setup () {
   textAlign(CENTER, CENTER);
   // make the manager
   Interactive.make( this );
-  //your code to initialize buttons goes here
   for (int r = 0; r < NUM_ROWS; r++) {
     for (int c = 0; c < NUM_COLS; c++) {
       squares[r][c] = new MSButton(r, c);
@@ -52,16 +51,13 @@ public void draw () {
 }
 
 public boolean isWon() {
-  //your code here
   return false;
 }
 
 public void displayLosingMessage() {
-  //your code here
 }
 
 public void displayWinningMessage() {
-  //your code here
 }
 
 public boolean isValid(int r, int c) {
@@ -156,7 +152,7 @@ public class MSButton
       textSize(20);
       fill(myRandColor);
     }
-    text(myLabel, x+width/2, y+height/2); //check this width and height
+    text(myLabel, x+width/2, y+height/2);
   }
   public void setLabel(String newLabel)
   {
