@@ -293,7 +293,7 @@ public class MSButton
     if (countMines(myRow, myCol) == 0) {
       for (int r = myRow - 1; r <= myRow + 1; r++) {
         for (int c = myCol - 1; c <= myCol + 1; c++) {
-          if (isValid(r, c) && !mines.contains(squares[r][c])) {
+          if (isValid(r, c) && squares[r][c].isClicked() == false) {
             squares[r][c].mousePressed();
           }
         }
@@ -381,4 +381,5 @@ public class MSButton
     return clicked;
   }
 }
+
 */
