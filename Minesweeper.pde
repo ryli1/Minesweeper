@@ -67,6 +67,7 @@ public void draw () {
   } else if (GAME_STATE == "LOSE") {
     displayLosingMessage();
   }
+  textSize(25);
   fill(255, 0, 0);
   text("|▀", 50, 650);
   fill(255);
