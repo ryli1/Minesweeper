@@ -1,7 +1,6 @@
 import de.bezier.guido.*;
 
 //got an if else stairway over here 😳
-//PROBLEM: RANDOMLY MOVING MINES CAN MOVE IT BACK TO OLD SPOTS
 
 public final static int NUM_ROWS = 10;
 public final static int NUM_COLS = 10;
