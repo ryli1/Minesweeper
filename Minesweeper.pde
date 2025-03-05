@@ -1,6 +1,9 @@
 import de.bezier.guido.*;
 
 //got an if else stairway over here 😳
+//PROBLEM: Random Mines adding to old spots
+/*when printing an object via "this", it will look for function toString() to return, otherwise it 
+ returns a memory address*/
 
 public final static int NUM_ROWS = 10;
 public final static int NUM_COLS = 10;
@@ -10,6 +13,7 @@ public static String GAME_STATE = "INPLAY"; //SELECT, INPLAY, LOSE, WIN
 
 public static boolean FIRST_CLICK = true;
 
+public static int flagCount = NUM_MINES;
 
 //width and height
 public static int w;
@@ -17,8 +21,7 @@ public static int h;
 
 private MSButton[][] squares = new MSButton[NUM_ROWS][NUM_COLS]; //2d array of minesweeper buttons
 private ArrayList <MSButton> mines = new ArrayList <MSButton>(); //ArrayList of just the minesweeper buttons that are mined
-private int[][] mineIndices = new int[NUM_MINES][2]; //2d array of mine locations
-
+private ArrayList <MSButton> initialMines = new ArrayList <MSButton>();
 void setup () {
   size(600, 700);
   w = width;
@@ -42,11 +45,17 @@ public void setMines() {
     int c = (int)(Math.random()*NUM_COLS);
     if (!mines.contains(squares[r][c])) { //if this square isn't already a mine
       mines.add(squares[r][c]);
+      initialMines.add(squares[r][c]);
     }
   }
-  for (MSButton mine : mines) {
-    for (int i = 0; i < mineIndices.length; i++) {
-      mineIndices[i] = mine.getRowAndCol();
+}
+
+public void setSingularMine() {
+  while (mines.size() < NUM_MINES) {
+    int r = (int)(Math.random()*NUM_ROWS);
+    int c = (int)(Math.random()*NUM_COLS);
+    if (!mines.contains(squares[r][c]) && !initialMines.contains(squares[r][c])) { //if this square isn't already a mine and not an old mine
+      mines.add(squares[r][c]);
     }
   }
 }
@@ -58,6 +67,10 @@ public void draw () {
   } else if (GAME_STATE == "LOSE") {
     displayLosingMessage();
   }
+  fill(255, 0, 0);
+  text("|▀", 50, 650);
+  fill(255);
+  text(flagCount, 100, 650);
 }
 
 public boolean isWon() {
@@ -156,10 +169,14 @@ public class MSButton
       if (mouseButton == RIGHT && !clicked) {
         clicked = false;
         flagged = !flagged;
-        if (flagged) {
+        if (flagged && flagCount > 0) {
           myLabel = "|▀";
-        } else { 
+          flagCount--;
+        } else if (flagged && flagCount <= 0) {
+          flagged = !flagged;
+        } else if (!flagged) { 
           myLabel = "";
+          flagCount++;
         }
       } else if (mouseButton == LEFT && flagged) {
         clicked = false;
@@ -171,28 +188,6 @@ public class MSButton
             myLabel = "" + countMines(myRow, myCol);
 
             //make random surrounding squares not a mine
-            /*for (int r = myRow-(int)(Math.random()*5); r < myRow+(int)(Math.random()*5); r++) {
-              for (int c = myCol-(int)(Math.random()*5); c < myCol+(int)(Math.random()*5); c++) {
-                if (isValid(r, c)) {
-                  if (mines.contains(squares[r][c])) {
-                    mines.remove(squares[r][c]);
-                    int[] newSpot = new int[]{(int)(Math.random()*NUM_ROWS), (int)(Math.random()*NUM_COLS)};
-                    for (int[] spots : mineIndices) {
-                      if (newSpot == spots) {
-                        newSpot[0] = (int)(Math.random()*NUM_ROWS);
-                        newSpot[1] = (int)(Math.random()*NUM_COLS);
-                        spots[0] = newSpot[0];
-                        spots[1] = newSpot[1];
-                      }
-                    }
-                    mines.add(squares[newSpot[0]][newSpot[1]]);
-                  }
-                  if (!mines.contains(squares[r][c])) {
-                    squares[r][c].mousePressed();
-                  }
-                }
-              }
-            }*/
 
             FIRST_CLICK = false;
           } else {
@@ -205,28 +200,17 @@ public class MSButton
             FIRST_CLICK = false;
 
             //make random surrounding squares not a mine
-            /*for (int r = myRow-(int)(Math.random()*5); r < myRow+(int)(Math.random()*5); r++) {
+           /* for (int r = myRow-(int)(Math.random()*5); r < myRow+(int)(Math.random()*5); r++) {
               for (int c = myCol-(int)(Math.random()*5); c < myCol+(int)(Math.random()*5); c++) {
                 if (isValid(r, c)) {
                   if (mines.contains(squares[r][c])) {
                     mines.remove(squares[r][c]);
-                    int[] newSpot = new int[]{(int)(Math.random()*NUM_ROWS), (int)(Math.random()*NUM_COLS)};
-                    for (int[] spots : mineIndices) {
-                      if (newSpot == spots) {
-                        newSpot[0] = (int)(Math.random()*NUM_ROWS);
-                        newSpot[1] = (int)(Math.random()*NUM_COLS);
-                        spots[0] = newSpot[0];
-                        spots[1] = newSpot[1];
-                      }
-                    }
-                    mines.add(squares[newSpot[0]][newSpot[1]]);
+                    setSingularMine();
                   }
-                  if (!mines.contains(squares[r][c])) {
-                    squares[r][c].mousePressed();
-                  }
+                  squares[r][c].mousePressed();
                 }
               }
-            }*/
+            } */
 
             if (countMines(myRow, myCol) != 0) {
               myLabel = "" + countMines(myRow, myCol);
@@ -255,7 +239,7 @@ public class MSButton
   }
 
   public void draw () { 
-    if (countMines(myRow, myCol) != 0 && clicked && !mined) {
+    if (countMines(myRow, myCol) != 0 && clicked && !mined && !mines.contains(this)) {
       myLabel = "" + countMines(myRow, myCol);
     }
     if (mouseX < x+width && mouseX > x && mouseY < y+height && mouseY > y) {
