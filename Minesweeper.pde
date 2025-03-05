@@ -1,6 +1,7 @@
 import de.bezier.guido.*;
 
 //got an if else stairway over here 😳
+//PROBLEM: RANDOMLY MOVING MINES CAN MOVE IT BACK TO OLD SPOTS
 
 public final static int NUM_ROWS = 10;
 public final static int NUM_COLS = 10;
@@ -86,7 +87,6 @@ public void displayLosingMessage() {
   text("You Lost...", 300, 650);
   popMatrix();
   //display all mines
-  delay(500);
   for (int r = 0; r < squares.length; r++) {
     for (int c = 0; c < squares[r].length; c++) {
       if (mines.contains(squares[r][c]) && squares[r][c].isClicked() == false) {
