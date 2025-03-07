@@ -8,7 +8,7 @@ import de.bezier.guido.*;
 public final static int NUM_ROWS = 10;
 public final static int NUM_COLS = 10;
 public final static int NUM_SQUARES = NUM_ROWS * NUM_COLS;
-public static int NUM_MINES = (NUM_ROWS*NUM_COLS)/5;
+public static int NUM_MINES = (NUM_ROWS*NUM_COLS)/6;
 public static String GAME_STATE = "INPLAY"; //SELECT, INPLAY, LOSE, WIN
 
 public static boolean FIRST_CLICK = true;
