@@ -44,10 +44,11 @@ void setup () {
 
 
 public void setMines(int row, int col) {
-  int rN = (int)(Math.random()*3)+1;
   reservedSquares.add(squares[row][col]);
-  for (int R = row-rN; R < row+rN; R++) {
-    for (int C = col-rN; C < col+rN; C++) {
+  int rN = (int)(Math.random()*3);
+  int rN2 = (int)(Math.random()*3);
+  for (int R = row-rN; R < row+rN2; R++) {
+    for (int C = col-rN2; C < col+rN; C++) {
       reservedSquares.add(squares[R][C]); //randomly make surrounding squares reserved
     }
   }
@@ -111,7 +112,7 @@ public class retryButton {
 public void mousePressed() {
   if (mouseButton == LEFT && rButt.isHovered() && (GAME_STATE == "LOSE" ||GAME_STATE == "WIN")) {
       while (mines.size() > 0) {
-      mines.remove(mines.size()-1);
+      mines.remove(mines.size()-1); //clear mines
     }
     while(reservedSquares.size() > 0) {
       reservedSquares.remove(reservedSquares.size()-1); //clear reserved squares 
