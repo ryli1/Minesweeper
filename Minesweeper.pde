@@ -111,8 +111,7 @@ public class retryButton {
 
 public void mousePressed() {
   if (mouseButton == LEFT && rButt.isHovered() && (GAME_STATE == "LOSE" ||GAME_STATE == "WIN")) {
-    println("HI");
-    while (mines.size() > 0) {
+      while (mines.size() > 0) {
       mines.remove(mines.size()-1);
     }
     for (int r = 0; r < NUM_ROWS; r++) {
