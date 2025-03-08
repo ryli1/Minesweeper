@@ -21,7 +21,10 @@ public static int h;
 
 private MSButton[][] squares = new MSButton[NUM_ROWS][NUM_COLS]; //2d array of minesweeper buttons
 private ArrayList <MSButton> mines = new ArrayList <MSButton>(); //ArrayList of just the minesweeper buttons that are mined
-private ArrayList <MSButton> initialMines = new ArrayList <MSButton>();
+private ArrayList <MSButton> reservedSquares = new ArrayList <MSButton>(); //ArrayList of reserved squares so there can be a safe zone
+
+private retryButton rButt = new retryButton();
+
 void setup () {
   size(600, 700);
   w = width;
@@ -35,30 +38,29 @@ void setup () {
     for (int c = 0; c < NUM_COLS; c++) {
       squares[r][c] = new MSButton(r, c);
     }
-  }
-  setMines();
+  }  
+  //setMines();
 }
 
-public void setMines() {
-  while (mines.size() < NUM_MINES) {
-    int r = (int)(Math.random()*NUM_ROWS);
-    int c = (int)(Math.random()*NUM_COLS);
-    if (!mines.contains(squares[r][c])) { //if this square isn't already a mine
-      mines.add(squares[r][c]);
-      initialMines.add(squares[r][c]);
+
+
+public void setMines(int row, int col) {
+  int rN = (int)(Math.random()*3)+1;
+  reservedSquares.add(squares[row][col]);
+  for (int R = row-rN; R < row+rN; R++) {
+    for (int C = col-rN; C < col+rN; C++) {
+      reservedSquares.add(squares[R][C]); //randomly make surrounding squares reserved
     }
   }
-}
-
-public void setSingularMine() {
   while (mines.size() < NUM_MINES) {
     int r = (int)(Math.random()*NUM_ROWS);
     int c = (int)(Math.random()*NUM_COLS);
-    if (!mines.contains(squares[r][c]) && !initialMines.contains(squares[r][c])) { //if this square isn't already a mine and not an old mine
+    if (!mines.contains(squares[r][c]) && !reservedSquares.contains(squares[r][c])) { //if this square isn't already a mine
       mines.add(squares[r][c]);
     }
   }
 }
+
 
 public void draw () {
   background(74, 117, 44);
@@ -67,12 +69,67 @@ public void draw () {
   } else if (GAME_STATE == "LOSE") {
     displayLosingMessage();
   }
+
   textSize(25);
   fill(255, 0, 0);
   text("|▀", 50, 650);
   fill(255);
   text(flagCount, 100, 650);
+
+  rButt.draw();
 }
+
+public class retryButton {
+  private boolean hovered = false;
+  public retryButton() {
+  }
+
+  public void draw() {
+    if (GAME_STATE == "LOSE" ||GAME_STATE == "WIN") {
+      pushMatrix();
+      if (mouseX < 450+120 && mouseX > 450 && mouseY < 625+50 && mouseY > 625) {
+        fill(103, 140, 77); 
+        hovered = true;
+      } else {
+        fill(136, 184, 101);
+        hovered = false;
+      }
+      rect(450, 625, 120, 50, 10);
+      fill(255);
+      textSize(15);
+      text("↻ Try Again", 510, 647);
+      popMatrix();
+    }
+  }
+  public boolean isHovered() {
+    return hovered;
+  }
+  public void setHovered(boolean newState) {
+    hovered = newState; 
+  }
+}
+
+public void mousePressed() {
+  if (mouseButton == LEFT && rButt.isHovered() && (GAME_STATE == "LOSE" ||GAME_STATE == "WIN")) {
+    println("HI");
+    while (mines.size() > 0) {
+      mines.remove(mines.size()-1);
+    }
+    for (int r = 0; r < NUM_ROWS; r++) {
+      for (int c = 0; c < NUM_COLS; c++) {
+        squares[r][c].setClicked(false);
+        textSize(25);
+        squares[r][c].setLabel("");
+        squares[r][c].setState(false);
+      }
+    }
+    GAME_STATE = "INPLAY";
+    FIRST_CLICK = true;
+    rButt.setHovered(false);
+  }
+}
+
+
 
 public boolean isWon() {
   int flagCount = 0;
@@ -135,9 +192,6 @@ public int countMines(int row, int col) {
   return numMines;
 }
 
-public void firstClick(int r, int c) {
-}
-
 public class MSButton 
 {
   private int myRow, myCol;
@@ -182,54 +236,29 @@ public class MSButton
       } else if (mouseButton == LEFT && flagged) {
         clicked = false;
       } else if (mouseButton == LEFT && !flagged) {
+        if (FIRST_CLICK) {
+          setMines(myRow, myCol);
+          FIRST_CLICK = false;
+        }
+        if (!mines.contains(this) && countMines(myRow, myCol) != 0) {
+          textSize(25);
+          setLabel(countMines(myRow, myCol));
+        }
         if (mines.contains(this)) {
-          if (FIRST_CLICK == true) {  //if this is the first click and it has a mine: make it not a mine
-            mines.remove(this);
-            mines.add(squares[(int)(Math.random()*NUM_ROWS)][(int)(Math.random()*NUM_COLS)]); //move it to a new spot
-            myLabel = "" + countMines(myRow, myCol);
-
-            //make random surrounding squares not a mine
-
-            FIRST_CLICK = false;
-          } else {
-            myLabel = "●";
-            mined = true;
-            GAME_STATE = "LOSE";
-          }
-        } else {
-          if (FIRST_CLICK == true) {  //if this is the first click and it has no mine, click it
-            FIRST_CLICK = false;
-
-            //make random surrounding squares not a mine
-           /* for (int r = myRow-(int)(Math.random()*5); r < myRow+(int)(Math.random()*5); r++) {
-              for (int c = myCol-(int)(Math.random()*5); c < myCol+(int)(Math.random()*5); c++) {
-                if (isValid(r, c)) {
-                  if (mines.contains(squares[r][c])) {
-                    mines.remove(squares[r][c]);
-                    setSingularMine();
-                  }
-                  squares[r][c].mousePressed();
-                }
-              }
-            } */
-
-            if (countMines(myRow, myCol) != 0) {
-              myLabel = "" + countMines(myRow, myCol);
-            }
-          } else {
-            if (countMines(myRow, myCol) != 0) {
-              myLabel = "" + countMines(myRow, myCol);
-            }
-          }
+          myLabel = "●";
+          mined = true;
+          GAME_STATE = "LOSE";
         }
       }
 
-      if (countMines(myRow, myCol) == 0 && mouseButton != RIGHT) {
+      if (countMines(myRow, myCol) == 0 && mouseButton != RIGHT||mouseButton != RIGHT && FIRST_CLICK) {
         for (int r = myRow - 1; r <= myRow + 1; r++) {
           for (int c = myCol - 1; c <= myCol + 1; c++) {
             if (isValid(r, c) && squares[r][c].isClicked() == false) {
               squares[r][c].mousePressed();
-              if (countMines(myRow, myCol) != 0) {
+              FIRST_CLICK = false;
+              if (countMines(myRow, myCol) != 0) {      
+                textSize(25);
                 myLabel = "" + countMines(myRow, myCol);
               }
             }
@@ -241,6 +270,7 @@ public class MSButton
 
   public void draw () { 
     if (countMines(myRow, myCol) != 0 && clicked && !mined && !mines.contains(this)) {
+      textSize(25);
       myLabel = "" + countMines(myRow, myCol);
     }
     if (mouseX < x+width && mouseX > x && mouseY < y+height && mouseY > y) {
@@ -301,6 +331,11 @@ public class MSButton
   public boolean isClicked() 
   {
     return clicked;
+  }
+  public void setClicked(boolean newState) {
+    clicked = newState;
+    flagged = newState;
+    mined = newState;
   }
   public int[] getRowAndCol() {
     int[] myRowAndCol = new int[]{myRow, myCol};
