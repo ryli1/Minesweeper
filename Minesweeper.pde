@@ -1,7 +1,6 @@
 import de.bezier.guido.*;
 
 //got an if else stairway over here 😳
-//PROBLEM: Random Mines adding to old spots
 /*when printing an object via "this", it will look for function toString() to return, otherwise it 
  returns a memory address*/
 
@@ -114,12 +113,16 @@ public void mousePressed() {
       while (mines.size() > 0) {
       mines.remove(mines.size()-1);
     }
+    while(reservedSquares.size() > 0) {
+      reservedSquares.remove(reservedSquares.size()-1); //clear reserved squares 
+    }
     for (int r = 0; r < NUM_ROWS; r++) {
       for (int c = 0; c < NUM_COLS; c++) {
         squares[r][c].setClicked(false);
         textSize(25);
         squares[r][c].setLabel("");
         squares[r][c].setState(false);
+        flagCount = 20;
       }
     }
     GAME_STATE = "INPLAY";
