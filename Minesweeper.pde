@@ -45,8 +45,8 @@ void setup () {
 
 public void setMines(int row, int col) {
   reservedSquares.add(squares[row][col]);
-  int rN = (int)(Math.random()*3);
-  int rN2 = (int)(Math.random()*3);
+  int rN = (int)(Math.random()*2)+2;
+  int rN2 = (int)(Math.random()*2)+2;
   for (int R = row-rN; R < row+rN2; R++) {
     for (int C = col-rN2; C < col+rN; C++) {
       reservedSquares.add(squares[R][C]); //randomly make surrounding squares reserved
